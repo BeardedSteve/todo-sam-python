@@ -39,4 +39,22 @@ Resources:
             Method: put
 
   Table:
-    Type: "AWS::Serverless::SimpleTable"
+    Type: "AWS::DynamoDB::Table"
+    Properties:
+      AttributeDefinitions:
+        -
+          AttributeName: "uuid"
+          AttributeType: "S"
+        -
+          AttributeName: "task"
+          AttributeType: "S"
+      KeySchema:
+        -
+          AttributeName: "uuid"
+          KeyType: "HASH"
+        -
+          AttributeName: "task"
+          KeyType: "RANGE"
+      ProvisionedThroughput:
+        ReadCapacityUnits: "5"
+        WriteCapacityUnits: "5"
