@@ -10,5 +10,8 @@ phases:
            --s3-bucket sam-todo-python \
            --s3-prefix $CODEBUILD_SOURCE_VERSION
 
-
+artifacts:
+  type: zip
+  files:
+    - output.yml
 
