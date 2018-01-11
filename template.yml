@@ -1,0 +1,42 @@
+AWSTemplateFormatVersion : '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: A simple API application.
+Resources:
+  LambdaGetTodoFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: todoapi.get
+      Runtime: python3.6
+      Timeout: 10
+      Policies: AmazonDynamoDBReadOnlyAccess
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref Table
+      Events:
+        GetTodo:
+          Type: Api
+          Properties:
+            Path: /todo
+            Method: get
+
+  LambdaPutTodoFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: todoapi.put
+      Runtime: python3.6
+      Timeout: 10
+      Policies: AmazonDynamoDBFullAccess
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref Table
+      Events:
+        GetTodo:
+          Type: Api
+          Properties:
+            Path: /todo
+            Method: put
+
+  Table:
+    Type: "AWS::Serverless::SimpleTable"
