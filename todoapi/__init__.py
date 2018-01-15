@@ -1,38 +1,41 @@
 import json
 from os import environ
-from uuid import uuid4
+from uuid import uuid4, UUID
 
 import boto3
-from boto3.dynamodb.conditions import Attr
+from bloop import Engine
+
+from todoapi.models.todo import TodoItem
 
 if environ.get("AWS_SAM_LOCAL") == "true":
-    dynamodb = boto3.resource('dynamodb', endpoint_url="http://dynamodb:8000")
-    TABLE_NAME = "todos"
-else:
-    dynamodb = boto3.resource('dynamodb')
-    TABLE_NAME = environ.get("TABLE_NAME", "todos")
+    dynamodb = boto3.client('dynamodb', endpoint_url="http://dynamodb:8000")
+    db = Engine(dynamodb=dynamodb)
+    db.bind(TodoItem)
 
-table = dynamodb.Table(TABLE_NAME)
+else:
+    dynamodb = boto3.client('dynamodb')
+    db = Engine(dynamodb=dynamodb)
+    db.bind(TodoItem)
 
 
 def get(event, context):
-    context.log(str(event))
-    try:
-        todos = table.scan(
-            FilterExpression=Attr('uuid').exists()
-        )['Items']
-    except Exception as err:
-        context.log(str(err))
-        todos = []
-    body = {"todos": todos}
+    #context.log(str(event))
+    if event['pathParameters']:
+        todo = db.query(TodoItem, key=TodoItem.uuid == UUID(event['pathParameters']['todo_id'])).one()
+        body = todo.as_dict
+    else:
+        todos = db.scan(TodoItem)
+        body = {"todos": [todo.as_dict for todo in todos]}
     return {"body": json.dumps(body), "statusCode": 200}
 
 
 def put(event, context):
     context.log(str(event))
     todo = json.loads(event['body'])
-    todo['uuid'] = uuid4().hex
-    table.put_item(
-        Item=todo
+    todo_item = TodoItem(
+        uuid=todo.get("uuid", uuid4()),
+        task=todo['task'],
+        completed=todo.get("completed", False)
     )
-    return {"body": json.dumps({"todo_id": todo['uuid']}), "statusCode": 200}
+    db.save(todo_item)
+    return {"body": json.dumps({"todo": todo_item.as_dict}), "statusCode": 200}

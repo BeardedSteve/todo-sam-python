@@ -5,7 +5,7 @@ Resources:
   LambdaGetTodoFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: .
+      CodeUri: bundle.zip
       Handler: todoapi.get
       Runtime: python3.6
       Timeout: 10
@@ -19,11 +19,17 @@ Resources:
           Properties:
             Path: /todo
             Method: get
+        GetTodoByID:
+          Type: Api
+          Properties:
+            Path: /todo/{todo_id}
+            Method: get
+
 
   LambdaPutTodoFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: .
+      CodeUri: bundle.zip
       Handler: todoapi.put
       Runtime: python3.6
       Timeout: 10
