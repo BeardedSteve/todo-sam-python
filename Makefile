@@ -38,7 +38,7 @@ bundle.local:
 		&& zip -r9 "$(ZIP_FILE)" *
 
 bundle:
-	docker run -v $$PWD:/var/task -it lambci/lambda:build-python3.6 /bin/bash -c 'make clean build bundle.local'
+	docker run -v $$PWD:/var/task lambci/lambda:build-python3.6 /bin/bash -c 'make clean build bundle.local'
 
 package:
 	sam package \
