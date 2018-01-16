@@ -9,7 +9,7 @@ Resources:
       Handler: todoapi.get
       Runtime: python3.6
       Timeout: 10
-      Policies: AmazonDynamoDBReadOnlyAccess
+      Policies: AmazonDynamoDBFullAccess
       Environment:
         Variables:
           TABLE_NAME: !Ref Table

@@ -15,7 +15,7 @@ if environ.get("AWS_SAM_LOCAL") == "true":
 else:
     dynamodb = boto3.client('dynamodb')
     db = Engine(dynamodb=dynamodb)
-    db.bind(TodoItem)
+    db.bind(TodoItem, skip_table_setup=True)
 
 
 def get(event, context):
