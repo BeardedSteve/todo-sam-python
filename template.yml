@@ -38,11 +38,34 @@ Resources:
         Variables:
           TABLE_NAME: !Ref Table
       Events:
-        GetTodo:
+        PutTodo:
           Type: Api
           Properties:
             Path: /todo
             Method: put
+        PutTodoComplete:
+          Type: Api
+          Properties:
+            Path: /todo/{todo_id}/complete
+            Method: put
+
+  LambdaDeleteTodoFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: bundle.zip
+      Handler: todoapi.delete
+      Runtime: python3.6
+      Timeout: 10
+      Policies: AmazonDynamoDBFullAccess
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref Table
+      Events:
+        GetTodo:
+          Type: Api
+          Properties:
+            Path: /todo/{todo_id}
+            Method: delete
 
   Table:
     Type: "AWS::DynamoDB::Table"
