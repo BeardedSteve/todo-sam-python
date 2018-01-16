@@ -1,12 +1,9 @@
 version: 0.2
 
 phases:
-  install:
-    commands:
-      - service docker start
   build:
     commands:
-      - make bundle
+      - make clean build bundle.local
       - |
           aws cloudformation package \
            --template-file template.yml \
